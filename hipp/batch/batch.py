@@ -60,7 +60,9 @@ def image_restitution(df_detected,
     if fiducial_coordinates_true_mm:
         fiducial_coordinates_true_mm = np.array(fiducial_coordinates_true_mm,dtype=float)
         fiducial_coordinates_true_px = fiducial_coordinates_true_mm / scanning_resolution_mm
-        fiducial_coordinates_true_px[:,1] = fiducial_coordinates_true_px[:,1] * -1
+        #fiducial_coordinates_true_px[:,1] = fiducial_coordinates_true_px[:,1] * -1  # commented out when inputting mean fiducial coords as the "true coords"
+        fiducial_coordinates_true_px[:,1] = fiducial_coordinates_true_px[:,1]  
+        
     
     # prepare dataframe with detected coordinates
     df_coords = df_detected.drop([image_file_name_column_name,'principal_point'], axis=1)
@@ -76,7 +78,8 @@ def image_restitution(df_detected,
 
         # add prinicpal point to get true fiducial coordinates into image reference system
         if np.any(fiducial_coordinates_true_mm):
-            fiducial_coordinates_true = fiducial_coordinates_true_px + principal_point
+            #fiducial_coordinates_true = fiducial_coordinates_true_px + principal_point  # commented out when inputting mean fiducial coords as the "true coords"
+            fiducial_coordinates_true = fiducial_coordinates_true_px  
 
 
         if qc and np.any(fiducial_coordinates_true_mm):
@@ -140,7 +143,7 @@ def image_restitution(df_detected,
             if len(fid_coord_tmp) >=3 and ~np.isnan(fid_coord_true_tmp).all():
 
                 tform = tf.AffineTransform()
-                tform.estimate(fid_coord_tmp, fid_coord_true_tmp)
+                tform.estimate(fid_coord_tmp, fid_coord_true_tmp)   # estimates the affine transformation parameters based on fid_coord_tmp and fid_coord_true_tmp
 
                 fiducial_coordinates_tform = tform(fiducial_coordinates)
                 principal_point = tform(principal_point)[0]
